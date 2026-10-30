@@ -245,3 +245,22 @@ public/imgs/            Imágenes de la tienda (en formato .webp)
 ```
 
 Más detalle en `ESQUEMA.md`.
+
+---
+
+## Novedades (sitio integral de la comunidad)
+
+- **Nuevas páginas:** `/historia`, `/maids`, `/eventos` (la merch sigue en `/productos`, ahora llamada "Nuestra Merch"). El filtro de merch acepta `/productos?maid=shikku`.
+- **Datos aparte del código:** `src/data/historia.ts`, `maids.ts`, `eventos.ts` (solo con información de la página oficial; no inventé nada).
+- **Rescatado de la rama `feature-conectar-api`:** `src/services/api.ts` (ordenado y con errores revisados), la idea de `useAuth` (ahora `src/hooks/useSesion.ts`, que sirve en modo local y en modo Cognito) y la configuración de OIDC en `main.tsx` (ahora con variables de entorno, sin datos escritos a mano). El `login-page.tsx` de ejemplo de Cognito **no** se copió: era un ejemplo suelto que mostraba los tokens en pantalla.
+- **Dependencias agregadas (justificadas):** `oidc-client-ts` y `react-oidc-context`, solo para el login con Cognito. Sin variables de entorno no se activan.
+
+### Qué es local, qué es real y qué está preparado
+| Funcionalidad | Estado |
+|---|---|
+| Catálogo, carrito, registro, login, contacto | Local (LocalStorage), de demostración |
+| Login con Amazon Cognito | Implementado, **no probado** (requiere AWS) |
+| Indicador de servidor, `api.ts` | Preparado; requiere `VITE_API_URL` y un backend |
+| `login`/`register`/`logout` de `api.ts` | Preparados, **no usados ni comprobados** |
+
+Ver `DESPLIEGUE.md` y `.env.example`.

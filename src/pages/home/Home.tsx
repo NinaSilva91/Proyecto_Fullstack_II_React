@@ -15,6 +15,13 @@ interface HomeProps {
 // (antes mostraba 3 productos que ni existían en el catálogo y sus fotos daban error 404)
 const destacados = productos.filter((p) => p.destacado);
 
+// acá puse los 3 accesos a las páginas de la comunidad; si agrego otra, solo sumo una línea
+const accesos = [
+  { href: "/historia", titulo: "Nuestra historia", texto: "Cómo nació y cómo volvió a despertar." },
+  { href: "/maids", titulo: "Maids", texto: "Conócelas y mira su merch." },
+  { href: "/eventos", titulo: "Eventos", texto: "Nuestras participaciones internacionales." },
+];
+
 const Home = ({ onAgregar }: HomeProps) => {
   return (
     <div className="mx-auto max-w-6xl">
@@ -49,6 +56,16 @@ const Home = ({ onAgregar }: HomeProps) => {
           alt="Secret Sweet Maid"
           className="h-52 w-full rounded-3xl border-4 border-white object-[50%_45%] shadow-lg shadow-rosa-300/30 sm:h-72 lg:h-80"
         />
+      </section>
+
+      {/* ---------- Accesos a la comunidad ---------- */}
+      <section aria-label="Conoce la comunidad" className="mt-8 grid gap-5 sm:grid-cols-3">
+        {accesos.map((a) => (
+          <Link key={a.href} href={a.href} className="panel block text-center transition hover:-translate-y-1">
+            <span className="block text-lg font-extrabold text-rosa-500">{a.titulo}</span>
+            <span className="mt-1 block text-sm font-semibold">{a.texto}</span>
+          </Link>
+        ))}
       </section>
 
       {/* ---------- Video ---------- */}

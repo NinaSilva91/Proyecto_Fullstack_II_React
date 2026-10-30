@@ -10,6 +10,10 @@
   --color-rosa-300: #ff8fb1; /* el rosado del menú */
   --color-rosa-400: #ff6b9d;
   --color-rosa-500: #d63384; /* el rosado de los títulos */
+  /* acá agregué los celestes de la identidad maid (se usan poquito: línea de tiempo y detalles) */
+  --color-celeste-100: #e4f4fd;
+  --color-celeste-300: #9fd6f2;
+  --color-celeste-500: #2f86b5;
   --color-ciruela: #4a2a3a; /* color del texto, más suave que el negro */
   --font-sans: "Nunito", ui-rounded, "Segoe UI", Arial, sans-serif;
 }

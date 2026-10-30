@@ -15,7 +15,10 @@ interface MenuProps {
 // acá puse la lista de links; si agrego una página nueva, solo agrego una línea
 const enlaces = [
   { href: "/", texto: "Inicio" },
-  { href: "/productos", texto: "Productos" },
+  { href: "/historia", texto: "Nuestra historia" },
+  { href: "/maids", texto: "Maids" },
+  { href: "/eventos", texto: "Eventos" },
+  { href: "/productos", texto: "Nuestra Merch" },
   { href: "/carrito", texto: "Carrito" },
   { href: "/contacto", texto: "Contacto" },
 ];

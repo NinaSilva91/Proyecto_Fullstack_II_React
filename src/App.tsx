@@ -1,5 +1,5 @@
 // App.tsx: acá armé el "centro" de la tienda.
-//  1) Guardo el carrito y la sesión (con useState) y se los paso por props a las páginas que los necesitan.
+//  1) Guardo el carrito (con useState) y la sesión (con mi hook useSesion) y se los paso por props a las páginas que los necesitan.
 //  2) Dibujo el menú (siempre visible) y la página que corresponde a la dirección.
 //  3) <Switch> mira la dirección (/productos, /carrito...) y muestra solo la <Route> que coincide.
 import { useEffect, useState } from "react";
@@ -9,19 +9,24 @@ import Menu from "./components/menu/Menu";
 import { productos, type Producto } from "./data/productos";
 import Carrito from "./pages/carrito/Carrito";
 import Contacto from "./pages/contacto/Contacto";
+import Eventos from "./pages/eventos/Eventos";
+import Historia from "./pages/historia/Historia";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
+import Maids from "./pages/maids/Maids";
 import NotFound from "./pages/not-found/NotFound";
 import ProductoDetalle from "./pages/producto-detalle/ProductoDetalle";
 import Productos from "./pages/productos/Productos";
 import Register from "./pages/register/Register";
 import { agregarItem, cambiarCantidad, contarUnidades, quitarItem, type ItemCarrito } from "./utils/carrito";
-import { borrarSesion, guardarCarrito, leerCarrito, leerSesion, type Sesion } from "./utils/storage";
+import { useSesion } from "./hooks/useSesion";
+import { guardarCarrito, leerCarrito } from "./utils/storage";
 
 function App() {
   // acá arranco con lo que haya guardado en el navegador, así no se pierde al recargar
   const [carrito, setCarrito] = useState<ItemCarrito[]>(leerCarrito);
-  const [sesion, setSesion] = useState<Sesion | null>(leerSesion);
+  // acá uso mi hook: me da la sesión (local o de Cognito) y las funciones para entrar y salir
+  const { sesion, modo, cargando, error, iniciarLocal, iniciarCognito, cerrarSesion } = useSesion();
 
   // cada vez que el carrito cambia, lo guardo en LocalStorage
   useEffect(() => {
@@ -40,23 +45,28 @@ function App() {
   const handleQuitar = (codigo: string) => setCarrito((actual) => quitarItem(actual, codigo));
   const handleVaciar = () => setCarrito([]);
 
-  const handleLogout = () => {
-    borrarSesion();
-    setSesion(null);
-  };
-
   return (
     <Router>
       {/* acá dejé mi grilla de 12 columnas: en computador el menú usa 3 (2 en pantallas muy grandes)
           y el contenido usa el resto; en celular todo va en una sola columna */}
       <div className="min-h-screen lg:grid lg:grid-cols-12">
-        <Menu sesion={sesion} cantidadCarrito={contarUnidades(carrito)} onLogout={handleLogout} />
+        <Menu sesion={sesion} cantidadCarrito={contarUnidades(carrito)} onLogout={cerrarSesion} />
 
         <main className="p-4 sm:p-6 lg:col-span-9 lg:p-10 xl:col-span-10">
+          {/* avisos de Cognito (solo aparecen en modo cognito si algo falla o está cargando) */}
+          {error && (
+            <p role="alert" className="panel mx-auto mb-4 max-w-6xl border-rosa-400 font-semibold text-rosa-500">
+              No se pudo iniciar sesión con Cognito: {error}
+            </p>
+          )}
+          {cargando && <p className="mx-auto mb-4 max-w-6xl font-semibold">Revisando tu sesión…</p>}
           <Switch>
             <Route path="/">
               <Home onAgregar={handleAgregar} />
             </Route>
+            <Route path="/historia" component={Historia} />
+            <Route path="/maids" component={Maids} />
+            <Route path="/eventos" component={Eventos} />
             <Route path="/productos">
               <Productos onAgregar={handleAgregar} />
             </Route>
@@ -73,7 +83,7 @@ function App() {
               />
             </Route>
             <Route path="/login">
-              <Login onLogin={setSesion} />
+              <Login onLogin={iniciarLocal} modo={modo} onCognito={iniciarCognito} />
             </Route>
             <Route path="/register" component={Register} />
             <Route path="/contacto" component={Contacto} />

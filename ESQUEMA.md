@@ -98,3 +98,17 @@ Computador                              Celular
 - La foto de Ritsu era `.jpg` y las demás `.JPG`: se rompe en servidores que distinguen mayúsculas. Ahora todas son `.webp`.
 - Las imágenes pesaban 45 MB; ahora pesan 2 MB (misma apariencia en pantalla).
 - El carrito no deja pedir más unidades que el stock.
+
+## 6) Agregado en la versión "sitio integral"
+
+```
+src/
+├── config/entorno.ts        ← lee las variables VITE_* (.env.local) en un solo lugar
+├── services/api.ts          ← cliente del backend (rescatado de feature-conectar-api)
+├── hooks/useSesion.ts       ← sesión local o de Cognito, con la misma forma para todo el sitio
+├── utils/cognito.ts         ← funciones puras de Cognito (con pruebas)
+├── data/historia.ts  maids.ts  eventos.ts
+├── components/maid-card/  redes/  estado-servidor/
+└── pages/historia/  maids/  eventos/
+```
+Rutas nuevas: `/historia`, `/maids`, `/eventos`. La merch sigue en `/productos` (`?maid=shikku` filtra).

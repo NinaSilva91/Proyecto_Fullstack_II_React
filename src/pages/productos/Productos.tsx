@@ -1,6 +1,7 @@
 // PÁGINA: PRODUCTOS (ruta "/productos")  <- mi productos.html de antes
 // Acá muestro todo el catálogo y lo puedo filtrar por maid con la lista desplegable.
 import { useState } from "react";
+import { useSearch } from "wouter";
 import PageTitle from "../../components/page-title/PageTitle";
 import ProductoCard from "../../components/producto-card/ProductoCard";
 import { categorias, productos, type Producto } from "../../data/productos";
@@ -11,7 +12,10 @@ interface ProductosProps {
 
 const Productos = ({ onAgregar }: ProductosProps) => {
   // acá guardo qué categoría eligió la persona (empieza en "todas")
-  const [categoria, setCategoria] = useState("todas");
+  // si llego desde la página de Maids, la dirección trae ?maid=shikku y arranco con ese filtro ya puesto
+  const maidPedida = new URLSearchParams(useSearch()).get("maid") ?? "";
+  const inicial = categorias.some((c) => c.valor === maidPedida) ? maidPedida : "todas";
+  const [categoria, setCategoria] = useState(inicial);
 
   // filtro la lista cada vez que dibujo; si es "todas" muestro todo
   const visibles = categoria === "todas" ? productos : productos.filter((p) => p.categoria === categoria);

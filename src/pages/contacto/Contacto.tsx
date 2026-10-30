@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import Field from "../../components/field/Field";
 import Mensaje, { type MensajeForm } from "../../components/mensaje/Mensaje";
 import PageTitle from "../../components/page-title/PageTitle";
+import Redes, { BUZON_URL } from "../../components/redes/Redes";
 import { hayErrores, validarComentario, validarCorreo, validarNombre } from "../../utils/validators";
 
 const vacio = { nombre: "", correo: "", comentario: "" };
@@ -51,6 +52,21 @@ const Contacto = () => {
           Enviar mensaje
         </button>
       </form>
+
+      {/* redes de la comunidad */}
+      <section className="panel mt-6 p-6">
+        <h3 className="mb-2 text-lg font-extrabold text-rosa-500">Síguenos</h3>
+        <p className="mb-2">
+          <Redes />
+        </p>
+        <p className="text-sm font-semibold">
+          ¿Quieres ser maid?{" "}
+          <a href={BUZON_URL} target="_blank" rel="noopener noreferrer" className="text-rosa-500 underline">
+            Abre el buzón
+          </a>{" "}
+          (no es una postulación oficial).
+        </p>
+      </section>
     </div>
   );
 };

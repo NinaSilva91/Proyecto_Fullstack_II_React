@@ -9,14 +9,17 @@ import Field from "../../components/field/Field";
 import Mensaje, { type MensajeForm } from "../../components/mensaje/Mensaje";
 import PageTitle from "../../components/page-title/PageTitle";
 import { iniciarSesion } from "../../utils/auth";
+import type { ModoAuth } from "../../utils/cognito";
 import type { Sesion } from "../../utils/storage";
 import { hayErrores, validarClave, validarCorreo } from "../../utils/validators";
 
 interface LoginProps {
   onLogin: (sesion: Sesion) => void; // función que viene de App.tsx
+  modo: ModoAuth; // "local" o "cognito" (viene de useSesion)
+  onCognito: () => void; // abre el inicio de sesión de Amazon Cognito
 }
 
-const Login = ({ onLogin }: LoginProps) => {
+const Login = ({ onLogin, modo, onCognito }: LoginProps) => {
   const [correo, setCorreo] = useState("");
   const [clave, setClave] = useState("");
   const [errores, setErrores] = useState({ correo: "", clave: "" });
@@ -65,6 +68,15 @@ const Login = ({ onLogin }: LoginProps) => {
           Ingresar
         </button>
       </form>
+      {/* este bloque solo aparece si la tienda está configurada con Amazon Cognito */}
+      {modo === "cognito" && (
+        <div className="panel mt-4 p-6 text-center">
+          <p className="mb-3 font-semibold">También puedes entrar con tu cuenta de Cognito.</p>
+          <button type="button" onClick={onCognito} className="boton">
+            Ingresar o crear cuenta con Cognito
+          </button>
+        </div>
+      )}
       <p className="mt-4 font-semibold">
         ¿No tienes cuenta?{" "}
         <Link href="/register" className="text-rosa-500 underline">

@@ -1,7 +1,7 @@
 // PÁGINA: DETALLE DE PRODUCTO (ruta "/productos/:codigo", por ejemplo /productos/SHI001)
 // Esta página cumple el RF04 del README: ver más información de un producto y agregarlo al carrito.
 // useParams() me da la parte ":codigo" de la dirección, y con eso busco el producto.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "wouter";
 import CantidadInput from "../../components/cantidad-input/CantidadInput";
 import PageTitle from "../../components/page-title/PageTitle";
@@ -16,9 +16,16 @@ interface ProductoDetalleProps {
 
 const ProductoDetalle = ({ onAgregar }: ProductoDetalleProps) => {
   const { codigo } = useParams<{ codigo: string }>();
+
   const [cantidad, setCantidad] = useState(1);
   const [agregado, setAgregado] = useState(false);
-
+  // Subir automáticamente al inicio cuando cambia el producto.
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }, [codigo]);
   const producto = productos.find((p) => p.codigo === codigo);
 
   // si escriben un código que no existe, muestro un mensaje amable en vez de una pantalla vacía
