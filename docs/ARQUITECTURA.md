@@ -258,16 +258,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
-        AuthenticationResultType result = authService.login(req.getEmail(), req.getPassword());
-        
-        LoginResponse response = new LoginResponse();
-        response.setAccessToken(result.accessToken());
-        response.setIdToken(result.idToken());
-        response.setRefreshToken(result.refreshToken());
-        response.setExpiresIn(result.expiresIn());
-        
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest req) {
+        // Si el usuario tiene contraseña temporal (primer login), la respuesta incluye
+        // challengeName="NEW_PASSWORD_REQUIRED" + session y no trae tokens
+        LoginResponse response = authService.login(req.getEmail(), req.getPassword());
+        return ResponseEntity.ok(ApiResponse.ok(response, "Login exitoso"));
+    }
+
+    // Completa el cambio de contraseña obligatorio: responde el challenge
+    // NEW_PASSWORD_REQUIRED y el usuario queda CONFIRMADO/activo en Cognito
+    @PostMapping("/nueva-contrasena")
+    public ResponseEntity<ApiResponse<LoginResponse>> confirmarNuevaContrasena(
+            @RequestBody NuevaContrasenaRequest req) {
+        LoginResponse response = authService.confirmarNuevaContrasena(
+                req.getEmail(), req.getSession(), req.getNuevaContrasena());
+        return ResponseEntity.ok(ApiResponse.ok(response, "Contraseña actualizada. Usuario activado exitosamente"));
     }
 
     @PostMapping("/logout")
@@ -308,6 +313,14 @@ private String accessToken;
 private String idToken;
 private String refreshToken;
 private Integer expiresIn;
+// Challenge de Cognito (NEW_PASSWORD_REQUIRED en primer login con contraseña temporal)
+private String challengeName;
+private String session;
+}
+@Data class NuevaContrasenaRequest {
+private String email;
+private String session;
+private String nuevaContrasena;
 }
 @Data class SolicitudPasswordRequest {
 private String email;

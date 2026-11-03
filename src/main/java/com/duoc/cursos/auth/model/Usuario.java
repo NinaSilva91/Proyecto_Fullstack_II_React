@@ -27,4 +27,27 @@ public class Usuario {
     )
     @Column(name = "rol", nullable = false)
     private Set<String> roles = new HashSet<>();
+
+    // ----- Datos de perfil de la tienda (formulario de registro de Secret Sweet Maid) -----
+
+    @Column(name = "run", length = 12)
+    private String run;
+
+    @Column(name = "apellidos", length = 100)
+    private String apellidos;
+
+    @Column(name = "fecha_nacimiento", length = 10) // "yyyy-MM-dd"
+    private String fechaNacimiento;
+
+    @Column(name = "tipo_usuario", length = 20)
+    private String tipoUsuario;
+
+    @Column(name = "region", length = 50)
+    private String region;
+
+    @Column(name = "comuna", length = 50)
+    private String comuna;
+
+    @Column(name = "direccion", length = 150)
+    private String direccion;
 }

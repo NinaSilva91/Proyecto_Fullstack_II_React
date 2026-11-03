@@ -1,16 +1,20 @@
 package com.duoc.cursos.config;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -67,6 +71,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse("NOT_FOUND", "Usuario no encontrado", HttpStatus.NOT_FOUND.value()));
     }
 
+    // La cuenta existe pero no se confirmó todavía (código de verificación del email)
+    @ExceptionHandler(UserNotConfirmedException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotConfirmed(UserNotConfirmedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("USER_NOT_CONFIRMED",
+                        "Tu cuenta está sin verificar: revisa el código que te llegó al correo e ingrésalo para activarla",
+                        HttpStatus.FORBIDDEN.value()));
+    }
+
     @ExceptionHandler(TooManyRequestsException.class)
     public ResponseEntity<ErrorResponse> handleTooManyRequests(TooManyRequestsException ex) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
@@ -106,9 +119,30 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getCode(), ex.getMessage(), status.value()));
     }
 
+    // --- Ruta no encontrada ---
+    // Spring Boot 3.2+: una petición a una URL sin controlador lanza NoResourceFoundException.
+    // Sin este handler, el generic(Exception) la devolvía como 500 en lugar de 404,
+    // y se perdía la info de qué ruta falló (clave para depurar el frontend)
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse("NOT_FOUND",
+                        "Ruta no encontrada: " + ex.getResourcePath(), HttpStatus.NOT_FOUND.value()));
+    }
+
+    // --- Método HTTP no soportado en la ruta (ej: GET en un @PostMapping) ---
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotSupported(HttpRequestMethodNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ErrorResponse("METHOD_NOT_ALLOWED",
+                        "Método no permitido: " + ex.getMessage(), HttpStatus.METHOD_NOT_ALLOWED.value()));
+    }
+
     // --- Genérica ---
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        // dejamos el stack trace en el log: sin esto un 500 es indistinguible de una adivinanza
+        log.error("Error interno no manejado", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse("INTERNAL_ERROR", "Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }

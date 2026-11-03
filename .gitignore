@@ -37,3 +37,22 @@ out/
 .vscode/
 .env
 mi-llave-privada.pem
+
+llave_web_yani.ppk
+
+Primer despliegue
+1- generar el .jar (de manera local)
+2- subir el archivo .env a EC2
+3- cargar las variables de entorno del .env a EC2 (source .env)
+4- bajar cualquier proceso que este corriendo en el puerto 8080 de la instancia EC2
+5- Subir a EC2 el .jar
+6- Instalar Java 21
+7- Ejecutar el .jar
+
+Despliegues para actualizar
+repetir pasos
+4,
+(eliminar .jar anterior de la instancia EC2),
+(generar el nuevo .jar de manera local, con tu nuevo codigo)
+5
+7

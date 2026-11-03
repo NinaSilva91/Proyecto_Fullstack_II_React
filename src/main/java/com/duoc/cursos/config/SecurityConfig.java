@@ -33,6 +33,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**", "/api/health", "/api/notificar", "/api/notificar/**").permitAll()
+                // El catálogo es público (se puede ver la tienda sin iniciar sesión)
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/productos/**").permitAll()
+                // El formulario de contacto es público
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/contacto").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> {}))
